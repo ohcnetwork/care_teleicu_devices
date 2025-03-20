@@ -1,5 +1,6 @@
 from care.emr.models.device import Device
 from care.emr.registries.device_type.device_registry import DeviceTypeBase
+
 from gateway_device.spec import GatewayDeviceReadSpec
 from vitals_observation_device.spec import (
     VitalsObservationDeviceMetadataWriteSpec,
@@ -34,7 +35,6 @@ class VitalsObservationDevice(DeviceTypeBase):
     def retrieve(self, obj):
         metadata = obj.metadata
         gateway = self.get_gateway_device(obj)
-        print(gateway)
         if gateway:
             metadata["gateway"] = GatewayDeviceReadSpec.serialize(gateway)
         return VitalsObservationDeviceMetadataReadSpec(**metadata).model_dump(

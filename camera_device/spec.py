@@ -1,10 +1,10 @@
 import enum
-from pydantic import BaseModel, UUID4, field_validator
-
-from camera_device.models.position_preset import PositionPreset
 from care.emr.models import Device, FacilityLocation
 from care.emr.resources.base import EMRResource
 from care.emr.resources.location.spec import FacilityLocationRetrieveSpec
+from pydantic import BaseModel, UUID4, field_validator
+
+from camera_device.models.position_preset import PositionPreset
 from gateway_device.spec import GatewayDeviceReadSpec
 from gateway_device.utils import validate_endpoint_address
 
@@ -65,27 +65,25 @@ class PositionPresetBaseSpec(EMRResource):
 
 
 class PositionPresetReadSpec(PositionPresetBaseSpec):
-    location: FacilityLocationRetrieveSpec | None = None
+    location: FacilityLocationRetrieveSpec
 
     @classmethod
     def perform_extra_serialization(cls, mapping, obj):
         mapping["id"] = obj.external_id
         cls.serialize_audit_users(mapping, obj)
-        if obj.location:
-            mapping["location"] = FacilityLocationRetrieveSpec.serialize(
-                obj.location
-            ).to_json()
+        mapping["location"] = FacilityLocationRetrieveSpec.serialize(
+            obj.location
+        ).to_json()
 
 
 class PositionPresetUpdateSpec(PositionPresetBaseSpec):
-    location: UUID4 | None = None
+    location: UUID4
 
     def perform_extra_deserialization(self, is_update, obj):
-        if self.location:
-            try:
-                obj.location = FacilityLocation.objects.get(external_id=self.location)
-            except FacilityLocation.DoesNotExist:
-                raise ValueError("Location does not exist")
+        try:
+            obj.location = FacilityLocation.objects.get(external_id=self.location)
+        except FacilityLocation.DoesNotExist:
+            raise ValueError("Location does not exist")
 
 
 class PositionPresetCreateSpec(PositionPresetUpdateSpec):

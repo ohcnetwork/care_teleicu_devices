@@ -1,3 +1,5 @@
+from care.emr.api.viewsets.base import EMRModelViewSet
+from care.emr.models import Device
 from django_filters import rest_framework as filters
 from rest_framework.generics import get_object_or_404
 
@@ -7,12 +9,10 @@ from camera_device.spec import (
     PositionPresetCreateSpec,
     PositionPresetUpdateSpec,
 )
-from care.emr.api.viewsets.base import EMRModelViewSet
-from care.emr.models import Device
 
 
 class PositionPresetFilters(filters.FilterSet):
-    pass
+    location = filters.UUIDFilter(field_name="location", lookup_expr="exact")
 
 
 class CameraPositionPresetViewSet(EMRModelViewSet):

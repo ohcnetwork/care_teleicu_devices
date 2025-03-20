@@ -1,3 +1,4 @@
+from care.emr.models.device import Device
 from drf_spectacular.utils import extend_schema
 from pydantic import BaseModel
 from rest_framework.decorators import action
@@ -5,7 +6,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import GenericViewSet
 
 from camera_device.spec import PTZPayloadSpec
-from care.emr.models.device import Device
 from gateway_device.client import GatewayClient
 
 
@@ -14,13 +14,12 @@ class GotoPresetRequestSpec(BaseModel):
 
 
 class CameraActionsViewSet(GenericViewSet):
-    queryset = Device.objects.all()
+    queryset = Device.objects.filter(care_type="camera")
     lookup_field = "external_id"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         # TODO: add authzn. here...
-        return queryset
+        return super().get_queryset()
 
     def get_gateway_request_data(self, *args, **kwargs):
         instance = self.get_object()

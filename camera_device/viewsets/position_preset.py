@@ -1,6 +1,8 @@
 from care.emr.api.viewsets.base import EMRModelViewSet
-from care.emr.models import Device
+from care.emr.models import Device, FacilityLocation
+from care.security.authorization import AuthorizationController
 from django_filters import rest_framework as filters
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 
 from camera_device.models import PositionPreset
@@ -26,10 +28,39 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
     filterset_class = PositionPresetFilters
     filter_backends = (filters.DjangoFilterBackend,)
 
+    def authorize_create(self, instance):
+        device = self.get_camera_obj()
+        if not AuthorizationController.call(
+            "can_manage_device", self.request.user, device
+        ):
+            raise PermissionDenied("You do not have permission to update device")
+
+    def authorize_update(self, instance, model_instance):
+        self.authorize_create(instance)
+
+    def authorize_destroy(self, instance):
+        self.authorize_update(None, instance)
+
     def get_queryset(self):
-        camera = self.get_camera_obj()
-        queryset = super().get_queryset().filter(camera=camera)
-        # TODO: add authzn. here...
+        device = self.get_camera_obj()
+        queryset = super().get_queryset().filter(camera=device)
+
+        if "location" in self.request.GET:
+            location = get_object_or_404(
+                FacilityLocation, external_id=self.request.GET["location"]
+            )
+            if not AuthorizationController.call(
+                "can_read_devices_on_location", self.request.user, location
+            ):
+                raise PermissionDenied(
+                    "You do not have permission to get position presets of this location"
+                )
+        else:
+            if not AuthorizationController.call(
+                "can_read_device", self.request.user, device
+            ):
+                raise PermissionDenied("You do not have permission to update device")
+
         return queryset
 
     def get_camera_obj(self):

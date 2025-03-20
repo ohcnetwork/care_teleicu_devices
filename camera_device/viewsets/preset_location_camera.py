@@ -5,6 +5,8 @@ from care.emr.resources.device.spec import (
     DeviceListSpec,
     DeviceRetrieveSpec,
 )
+from care.security.authorization import AuthorizationController
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 
 
@@ -19,7 +21,13 @@ class PresetLocationCameraViewSet(EMRModelReadOnlyViewSet):
         )
 
     def get_queryset(self):
-        # TODO: add authzn. here...
+        location = self.get_location_obj()
+        if not AuthorizationController.call(
+            "can_read_devices_on_location", self.request.user, location
+        ):
+            raise PermissionDenied(
+                "You do not have permission to get devices of this location."
+            )
         return (
             super()
             .get_queryset()
@@ -27,4 +35,5 @@ class PresetLocationCameraViewSet(EMRModelReadOnlyViewSet):
                 care_type="camera",
                 position_presets__location=self.get_location_obj(),
             )
+            .distinct("id")
         )

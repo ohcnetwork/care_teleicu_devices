@@ -1,4 +1,5 @@
 from care.emr.registries.device_type.device_registry import DeviceTypeBase
+
 from gateway_device.spec import (
     GatewayDeviceMetadataWriteSpec,
     GatewayDeviceMetadataReadSpec,
@@ -23,7 +24,3 @@ class GatewayDevice(DeviceTypeBase):
 
     def retrieve(self, obj):
         return GatewayDeviceMetadataReadSpec(**obj.metadata).model_dump(mode="json")
-
-    def perform_action(self, obj, action, request):
-        # TODO: return BadRequest / Not Allowed
-        raise NotImplementedError("Gateway device actions are not implemented")

@@ -17,10 +17,6 @@ class CameraActionsViewSet(GenericViewSet):
     queryset = Device.objects.filter(care_type="camera")
     lookup_field = "external_id"
 
-    def get_queryset(self):
-        # TODO: add authzn. here...
-        return super().get_queryset()
-
     def get_gateway_request_data(self, *args, **kwargs):
         instance = self.get_object()
         metadata = instance.metadata

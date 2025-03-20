@@ -12,7 +12,9 @@ from camera_device.spec import (
 
 
 class PositionPresetFilters(filters.FilterSet):
-    location = filters.UUIDFilter(field_name="location", lookup_expr="exact")
+    location = filters.UUIDFilter(
+        field_name="location__external_id", lookup_expr="exact"
+    )
 
 
 class CameraPositionPresetViewSet(EMRModelViewSet):

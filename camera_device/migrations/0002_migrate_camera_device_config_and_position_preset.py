@@ -5,6 +5,40 @@ from django.db import migrations
 MIGRATION_ID = 1584456952001
 
 
+def migrate_camera_device_config(apps, schema_editor):
+    from care.emr.models import Device
+    from care.facility.utils import disable_auto_time
+
+    enable_auto_time = disable_auto_time(Device)
+
+    Device.objects.filter(metadata__class="ONVIF").update(care_type="camera")
+
+    queryset = Device.objects.filter(care_type="camera").order_by("id")
+    paginator = Paginator(queryset, 1000)
+    for page in paginator.page_range:
+        bulk = []
+        for device in paginator.page(page):
+            metadata = device.metadata
+            # TODO: switch to read from meta once @sainak is done with the changes
+            metadata["type"] = metadata.pop("class", "ONVIF")
+            connection_meta = metadata.pop("connection_meta", {})
+            metadata["endpoint_address"] = connection_meta.get("local_ip_address")
+            try:
+                metadata["username"], metadata["password"], metadata["stream_id"] = (
+                    connection_meta.get("camera_access_key", "").split(":")
+                )
+            except ValueError:
+                pass
+            bulk.append(device)
+        Device.objects.bulk_update(bulk, ["metadata"])
+
+    enable_auto_time()
+
+
+def reverse_migrate_camera_device_config(apps, schema_editor):
+    pass
+
+
 def migrate_position_preset(apps, schema_editor):
     from camera_device.models import PositionPreset
     from care.facility.utils import disable_auto_time
@@ -57,5 +91,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_position_preset, reverse_migrate_position_preset),
+        migrations.RunPython(
+            migrate_camera_device_config,
+            reverse_migrate_camera_device_config,
+        ),
+        migrations.RunPython(
+            migrate_position_preset,
+            reverse_migrate_position_preset,
+        ),
     ]

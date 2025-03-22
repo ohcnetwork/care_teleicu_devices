@@ -8,7 +8,7 @@ from gateway_device.utils import validate_endpoint_address
 
 class VitalsObservationDeviceType(enum.Enum):
     hl7_monitor = "HL7-Monitor"
-    # ventilator = "Ventilator"
+    ventilator = "Ventilator"
 
 
 class VitalsObservationDeviceMetadataReadSpec(BaseModel):

@@ -25,19 +25,19 @@ from plugs.plug import Plug
 plugs = [
     Plug(
         name="gateway_device",
-        package_name="/app/plug", # this should be relative path of plug
+        package_name="/app/plug", # this should be relative path of the plug
         version="",
         configs={},
     ),
     Plug(
         name="camera_device",
-        package_name="/app/plug", # this should be relative path of plug
+        package_name="/app/plug", # this should be relative path of the plug
         version="",
         configs={},
     ),
     Plug(
-        name="vitals_observation_device", # this should be relative path of plug
-        package_name="/app/plug",
+        name="vitals_observation_device",
+        package_name="/app/plug", # this should be relative path of the plug
         version="",
         configs={},
     ),
@@ -48,8 +48,14 @@ manager = PlugManager(plugs)
 ...
 ```
 
+3. Install the plugs
 
-3. Add the plugin config in plug_config.py
+```bash
+python install_plugins.py
+```
+
+
+4. Add the plugin config in plug_config.py
 
 ```python
 ...
@@ -65,7 +71,7 @@ plugs = [hello_plug]
 ...
 ````
 
-4. Tweak the code in plugs/manager.py, install the plugin in editable mode
+5. Tweak the code in plugs/manager.py, install the plugin in editable mode
 
 ```python
 ...
@@ -77,7 +83,7 @@ subprocess.check_call(
 ...
 ```
 
-5. Rebuild the docker image and run the server
+6. Rebuild the docker image and run the server
 
 ```bash
 make re-build

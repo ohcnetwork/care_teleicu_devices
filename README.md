@@ -25,19 +25,19 @@ from plugs.plug import Plug
 plugs = [
     Plug(
         name="gateway_device",
-        package_name="/Users/rithviknishad/ohc.network/care_teleicu_devices",
+        package_name="/app/plug", # this should be relative path of plug
         version="",
         configs={},
     ),
     Plug(
         name="camera_device",
-        package_name="/Users/rithviknishad/ohc.network/care_teleicu_devices",
+        package_name="/app/plug", # this should be relative path of plug
         version="",
         configs={},
     ),
     Plug(
-        name="vitals_observation_device",
-        package_name="/Users/rithviknishad/ohc.network/care_teleicu_devices",
+        name="vitals_observation_device", # this should be relative path of plug
+        package_name="/app/plug",
         version="",
         configs={},
     ),

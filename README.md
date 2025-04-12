@@ -3,7 +3,6 @@
 [![Release Status](https://img.shields.io/pypi/v/care_hello.svg)](https://pypi.python.org/pypi/care_hello)
 [![Build Status](https://github.com/ohcnetwork/care_hello/actions/workflows/build.yaml/badge.svg)](https://github.com/ohcnetwork/care_hello/actions/workflows/build.yaml)
 
-
 ## Local Development
 
 To develop the plug in local environment along with care, follow the steps below:
@@ -15,7 +14,42 @@ cd care
 git clone git@github.com:ohcnetwork/care_camera_device.git
 ```
 
-2. Add the plugin config in plug_config.py
+2. Add the following plug configuration to your `plug_config.py` file to enable the plugins locally:
+
+````python
+...
+
+from plugs.manager import PlugManager
+from plugs.plug import Plug
+
+plugs = [
+    Plug(
+        name="gateway_device",
+        package_name="/Users/rithviknishad/ohc.network/care_teleicu_devices",
+        version="",
+        configs={},
+    ),
+    Plug(
+        name="camera_device",
+        package_name="/Users/rithviknishad/ohc.network/care_teleicu_devices",
+        version="",
+        configs={},
+    ),
+    Plug(
+        name="vitals_observation_device",
+        package_name="/Users/rithviknishad/ohc.network/care_teleicu_devices",
+        version="",
+        configs={},
+    ),
+]
+
+manager = PlugManager(plugs)
+
+...
+```
+
+
+3. Add the plugin config in plug_config.py
 
 ```python
 ...
@@ -29,9 +63,9 @@ hello_plugin = Plug(
 plugs = [hello_plug]
 
 ...
-```
+````
 
-3. Tweak the code in plugs/manager.py, install the plugin in editable mode
+4. Tweak the code in plugs/manager.py, install the plugin in editable mode
 
 ```python
 ...
@@ -43,7 +77,7 @@ subprocess.check_call(
 ...
 ```
 
-4. Rebuild the docker image and run the server
+5. Rebuild the docker image and run the server
 
 ```bash
 make re-build

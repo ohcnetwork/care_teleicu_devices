@@ -77,7 +77,7 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
         request_data["camera"] = camera.external_id
         return request_data
     
-    @action(detail=True, methods=["PATCH"])
+    @action(detail=True, methods=["POST"])
     def set_default(self, request, *args, **kwargs):
         preset = super().get_object()
         location = preset.location

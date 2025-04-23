@@ -2,8 +2,12 @@ from care.emr.api.viewsets.base import EMRModelViewSet
 from care.emr.models import Device, FacilityLocation
 from care.security.authorization import AuthorizationController
 from django_filters import rest_framework as filters
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.generics import get_object_or_404
+from drf_spectacular.utils import extend_schema
+from django.db import transaction
+from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from camera_device.models import PositionPreset
 from camera_device.spec import (
@@ -72,3 +76,18 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
         camera = self.get_camera_obj()
         request_data["camera"] = camera.external_id
         return request_data
+    
+    @action(detail=True, methods=["PATCH"])
+    def set_default(self, request, *args, **kwargs):
+        preset = super().get_object()
+        # Check if the preset is already default
+        if preset.is_default:
+            return Response({"message": "Preset is already default"}, status=200)
+        # Set all other presets for the camera as non-default
+        with transaction.atomic():
+            PositionPreset.objects.filter(camera=preset.camera, is_default=True).update(is_default=False)
+            # Set the current preset as the default
+            preset.is_default = True
+            preset.save(update_fields=["is_default"])
+
+        return Response({"message": "Preset successfully set as default"}, status=200)

@@ -1,5 +1,6 @@
-from care.emr.models.base import EMRBaseModel
 from django.db import models
+
+from care.emr.models.base import EMRBaseModel
 
 
 class PositionPreset(EMRBaseModel):
@@ -15,7 +16,7 @@ class PositionPreset(EMRBaseModel):
         if not self.sort_index:
             self.sort_index = (
                 PositionPreset.objects.filter(location=self.location).aggregate(
-                    Max("sort_index", default=0)
+                    models.Max("sort_index", default=0)
                 )["sort_index__max"]
                 + 1
             )

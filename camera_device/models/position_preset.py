@@ -9,3 +9,14 @@ class PositionPreset(EMRBaseModel):
     )
     location = models.ForeignKey("emr.FacilityLocation", on_delete=models.PROTECT)
     ptz = models.JSONField()
+    sort_index = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if not self.sort_index:
+            self.sort_index = (
+                PositionPreset.objects.filter(location=self.location).aggregate(
+                    Max("sort_index", default=0)
+                )["sort_index__max"]
+                + 1
+            )
+        super().save(*args, **kwargs)

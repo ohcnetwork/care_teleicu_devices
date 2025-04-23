@@ -1,7 +1,5 @@
-from care.emr.api.viewsets.base import EMRModelViewSet
-from care.emr.models import Device, FacilityLocation
-from care.security.authorization import AuthorizationController
 from django_filters import rest_framework as filters
+from rest_framework import filters as rest_framework_filters
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 
@@ -11,6 +9,9 @@ from camera_device.spec import (
     PositionPresetCreateSpec,
     PositionPresetUpdateSpec,
 )
+from care.emr.api.viewsets.base import EMRModelViewSet
+from care.emr.models import Device, FacilityLocation
+from care.security.authorization import AuthorizationController
 
 
 class PositionPresetFilters(filters.FilterSet):
@@ -26,7 +27,10 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
     pydantic_retrieve_model = PositionPresetReadSpec
     pydantic_read_model = PositionPresetReadSpec
     filterset_class = PositionPresetFilters
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        rest_framework_filters.OrderingFilter,
+    )
 
     def authorize_create(self, instance):
         device = self.get_camera_obj()

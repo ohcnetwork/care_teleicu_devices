@@ -80,12 +80,13 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
     @action(detail=True, methods=["POST"])
     def set_default(self, request, *args, **kwargs):
         preset = super().get_object()
+        location = preset.location
         # Check if the preset is already default
         if preset.is_default:
             return Response({"message": "Preset is already default"}, status=200)
         # Set all other presets for the camera as non-default
         with transaction.atomic():
-            PositionPreset.objects.filter(camera=preset.camera, location=preset.location, is_default=True).update(is_default=False)
+            PositionPreset.objects.filter(camera=preset.camera, location=location, is_default=True).update(is_default=False)
             # Set the current preset as the default
             preset.is_default = True
             preset.save(update_fields=["is_default"])

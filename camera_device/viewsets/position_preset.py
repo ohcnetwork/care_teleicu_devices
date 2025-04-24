@@ -31,6 +31,7 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
         filters.DjangoFilterBackend,
         rest_framework_filters.OrderingFilter,
     )
+    ordering_fields = ["sort_index"]
 
     def authorize_create(self, instance):
         device = self.get_camera_obj()

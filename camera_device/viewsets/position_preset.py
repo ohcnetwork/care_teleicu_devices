@@ -2,7 +2,7 @@ from care.emr.api.viewsets.base import EMRModelViewSet
 from care.emr.models import Device, FacilityLocation
 from care.security.authorization import AuthorizationController
 from django_filters import rest_framework as filters
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from django.db import transaction
@@ -77,6 +77,7 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
         request_data["camera"] = camera.external_id
         return request_data
     
+    @extend_schema(request=None)
     @action(detail=True, methods=["POST"])
     def set_default(self, request, *args, **kwargs):
         preset = super().get_object()

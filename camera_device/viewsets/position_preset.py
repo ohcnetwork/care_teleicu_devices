@@ -1,13 +1,10 @@
-from care.emr.api.viewsets.base import EMRModelViewSet
-from care.emr.models import Device, FacilityLocation
-from care.security.authorization import AuthorizationController
+from django.db import transaction
 from django_filters import rest_framework as filters
+from drf_spectacular.utils import extend_schema
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
-from drf_spectacular.utils import extend_schema
-from django.db import transaction
 from rest_framework.response import Response
-from rest_framework.decorators import action
 
 from camera_device.models import PositionPreset
 from camera_device.spec import (
@@ -15,6 +12,9 @@ from camera_device.spec import (
     PositionPresetCreateSpec,
     PositionPresetUpdateSpec,
 )
+from care.emr.api.viewsets.base import EMRModelViewSet
+from care.emr.models import Device, FacilityLocation
+from care.security.authorization import AuthorizationController
 
 
 class PositionPresetFilters(filters.FilterSet):
@@ -76,21 +76,18 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
         camera = self.get_camera_obj()
         request_data["camera"] = camera.external_id
         return request_data
-    
+
     @extend_schema(request=None)
     @action(detail=True, methods=["POST"])
     def set_default(self, request, *args, **kwargs):
-        preset = super().get_object()
-        location = preset.location
-        self.authorize_update(None, preset)
-        # Check if the preset is already default
-        if preset.is_default:
-            return Response({"message": "Preset is already default"}, status=200)
-        # Set all other presets for the camera as non-default
-        with transaction.atomic():
-            PositionPreset.objects.filter(camera=preset.camera, location=location, is_default=True).update(is_default=False)
-            # Set the current preset as the default
-            preset.is_default = True
-            preset.save(update_fields=["is_default"])
-
-        return Response({"message": "Preset successfully set as default"}, status=200)
+        instance = super().get_object()
+        self.authorize_update(None, instance)
+        if not instance.is_default:
+            with transaction.atomic():
+                # Set all other presets for that camera+location as non-default
+                PositionPreset.objects.filter(
+                    camera=instance.camera, location=instance.location, is_default=True
+                ).update(is_default=False)
+                instance.is_default = True
+                instance.save(update_fields=["is_default"])
+        return Response(status=200)

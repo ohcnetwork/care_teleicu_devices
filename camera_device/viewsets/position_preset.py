@@ -1,5 +1,6 @@
-from django.db import transaction
 from django_filters import rest_framework as filters
+from django.db import transaction
+from rest_framework import filters as rest_framework_filters
 from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
@@ -30,7 +31,11 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
     pydantic_retrieve_model = PositionPresetReadSpec
     pydantic_read_model = PositionPresetReadSpec
     filterset_class = PositionPresetFilters
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        rest_framework_filters.OrderingFilter,
+    )
+    ordering_fields = ["sort_index", "location__name"]
 
     def authorize_create(self, instance):
         device = self.get_camera_obj()

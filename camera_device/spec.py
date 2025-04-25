@@ -1,5 +1,5 @@
 import enum
-from pydantic import BaseModel, UUID4, field_validator
+from pydantic import BaseModel, UUID4, field_validator, Field
 
 from camera_device.models.position_preset import PositionPreset
 from care.emr.models import Device, FacilityLocation
@@ -55,6 +55,10 @@ class PTZPayloadSpec(BaseModel):
     zoom: float
 
 
+MIN_SORT_INDEX = 0
+MAX_SORT_INDEX = 10000
+
+
 class PositionPresetBaseSpec(EMRResource):
     __model__ = PositionPreset
     __exclude__ = ["camera", "location"]
@@ -62,11 +66,16 @@ class PositionPresetBaseSpec(EMRResource):
     id: UUID4 | None = None
     name: str
     ptz: PTZPayloadSpec
+    sort_index: int | None = Field(
+        default=0,
+        ge=MIN_SORT_INDEX,
+        le=MAX_SORT_INDEX,
+    )
 
 
 class PositionPresetReadSpec(PositionPresetBaseSpec):
     location: FacilityLocationRetrieveSpec
-    is_default : bool
+    is_default: bool
 
     @classmethod
     def perform_extra_serialization(cls, mapping, obj):

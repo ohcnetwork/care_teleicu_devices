@@ -8,7 +8,7 @@ from django.db.models.functions import RowNumber
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("camera_device", "0001_initial"),
+        ("camera_device", "0002_positionpreset_is_default"),
     ]
 
     def backfill_sort_index(apps, schema_editor):

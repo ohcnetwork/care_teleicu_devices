@@ -66,6 +66,7 @@ class PositionPresetBaseSpec(EMRResource):
 
 class PositionPresetReadSpec(PositionPresetBaseSpec):
     location: FacilityLocationRetrieveSpec
+    is_default : bool
 
     @classmethod
     def perform_extra_serialization(cls, mapping, obj):

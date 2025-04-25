@@ -9,3 +9,4 @@ class PositionPreset(EMRBaseModel):
     )
     location = models.ForeignKey("emr.FacilityLocation", on_delete=models.PROTECT)
     ptz = models.JSONField()
+    is_default = models.BooleanField(default=False)

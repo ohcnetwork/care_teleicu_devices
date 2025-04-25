@@ -1,3 +1,4 @@
+from care.emr.models.base import EMRBaseModel
 from django.db import models
 
 from care.emr.models.base import EMRBaseModel
@@ -10,6 +11,7 @@ class PositionPreset(EMRBaseModel):
     )
     location = models.ForeignKey("emr.FacilityLocation", on_delete=models.PROTECT)
     ptz = models.JSONField()
+    is_default = models.BooleanField(default=False)
     sort_index = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):

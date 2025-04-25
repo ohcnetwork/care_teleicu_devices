@@ -1,10 +1,13 @@
 import enum
-from pydantic import BaseModel, UUID4, field_validator, Field
+from pydantic import BaseModel, UUID4, field_validator
 
 from camera_device.models.position_preset import PositionPreset
 from care.emr.models import Device, FacilityLocation
 from care.emr.resources.base import EMRResource
 from care.emr.resources.location.spec import FacilityLocationRetrieveSpec
+from pydantic import BaseModel, UUID4, field_validator
+
+from camera_device.models.position_preset import PositionPreset
 from gateway_device.spec import GatewayDeviceReadSpec
 from gateway_device.utils import validate_endpoint_address
 
@@ -14,7 +17,7 @@ class CameraDeviceTypes(enum.Enum):
 
 
 class CameraDeviceMetadataWriteSpec(BaseModel):
-    type: CameraDeviceTypes
+    type: CameraDeviceTypes | None = None
     gateway: UUID4 | None = None
     endpoint_address: str | None = None
     username: str | None = None
@@ -42,7 +45,7 @@ class CameraDeviceMetadataWriteSpec(BaseModel):
 
 class CameraDeviceMetadataReadSpec(BaseModel):
     gateway: GatewayDeviceReadSpec | None = None
-    type: CameraDeviceTypes
+    type: CameraDeviceTypes | None = None
     endpoint_address: str | None = None
     username: str | None = None
     password: str | None = None
@@ -75,6 +78,7 @@ class PositionPresetBaseSpec(EMRResource):
 
 class PositionPresetReadSpec(PositionPresetBaseSpec):
     location: FacilityLocationRetrieveSpec
+    is_default : bool
 
     @classmethod
     def perform_extra_serialization(cls, mapping, obj):

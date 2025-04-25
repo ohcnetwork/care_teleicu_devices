@@ -1,4 +1,3 @@
-from care.emr.models.device import Device
 from drf_spectacular.utils import extend_schema
 from pydantic import BaseModel
 from rest_framework.decorators import action
@@ -6,6 +5,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import GenericViewSet
 
 from camera_device.spec import PTZPayloadSpec
+from care.emr.models.device import Device
 from gateway_device.client import GatewayClient
 
 
@@ -92,9 +92,12 @@ class CameraActionsViewSet(GenericViewSet):
         metadata = instance.metadata
         gateway_client = self.get_gateway_client()
         try:
-            request_data = {"stream_id": metadata["stream_id"]}
+            request_data = {
+                "stream": metadata["stream_id"],
+                "ip": metadata["endpoint_address"],
+            }
         except KeyError as e:
             raise ValidationError({key: "Not configured" for key in e.args}) from e
         return gateway_client.post(
-            "/api/stream/getToken/videoFeed", request_data, as_http_response=True
+            "/getToken/videoFeed", request_data, as_http_response=True
         )

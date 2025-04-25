@@ -1,7 +1,11 @@
 from django_filters import rest_framework as filters
+from django.db import transaction
 from rest_framework import filters as rest_framework_filters
+from drf_spectacular.utils import extend_schema
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
 
 from camera_device.models import PositionPreset
 from camera_device.spec import (
@@ -77,3 +81,18 @@ class CameraPositionPresetViewSet(EMRModelViewSet):
         camera = self.get_camera_obj()
         request_data["camera"] = camera.external_id
         return request_data
+
+    @extend_schema(request=None)
+    @action(detail=True, methods=["POST"])
+    def set_default(self, request, *args, **kwargs):
+        instance = super().get_object()
+        self.authorize_update(None, instance)
+        if not instance.is_default:
+            with transaction.atomic():
+                # Set all other presets for that camera+location as non-default
+                PositionPreset.objects.filter(
+                    camera=instance.camera, location=instance.location, is_default=True
+                ).update(is_default=False)
+                instance.is_default = True
+                instance.save(update_fields=["is_default"])
+        return Response(status=200)

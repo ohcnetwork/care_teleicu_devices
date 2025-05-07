@@ -48,30 +48,13 @@ manager = PlugManager(plugs)
 ...
 ```
 
-3. Install the plugs
+3. Install the plugins
 
 ```bash
 python install_plugins.py
 ```
 
-
-4. Add the plugin config in plug_config.py
-
-```python
-...
-
-hello_plugin = Plug(
-    name="camera_device", # name of the django app in the plugin
-    package_name="/app/care_camera_device", # this has to be /app/ + plugin folder name
-    version="", # keep it empty for local development
-    configs={}, # plugin configurations if any
-)
-plugs = [hello_plug]
-
-...
-````
-
-5. Tweak the code in plugs/manager.py, install the plugin in editable mode
+4. Tweak the code in plugs/manager.py to update the pip install command with the -e flag for editable installation
 
 ```python
 ...
@@ -83,7 +66,7 @@ subprocess.check_call(
 ...
 ```
 
-6. Rebuild the docker image and run the server
+5. Rebuild the docker image and run the server
 
 ```bash
 make re-build
@@ -119,3 +102,4 @@ This project is licensed under the terms of the [MIT license](LICENSE).
 ---
 
 This plugin was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) using the [ohcnetwork/care-plugin-cookiecutter](https://github.com/ohcnetwork/care-plugin-cookiecutter).
+````

@@ -3,7 +3,6 @@
 [![Release Status](https://img.shields.io/pypi/v/care_hello.svg)](https://pypi.python.org/pypi/care_hello)
 [![Build Status](https://github.com/ohcnetwork/care_hello/actions/workflows/build.yaml/badge.svg)](https://github.com/ohcnetwork/care_hello/actions/workflows/build.yaml)
 
-
 ## Local Development
 
 To develop the plug in local environment along with care, follow the steps below:
@@ -15,23 +14,47 @@ cd care
 git clone git@github.com:ohcnetwork/care_camera_device.git
 ```
 
-2. Add the plugin config in plug_config.py
+2. Add the following plug configuration to your `plug_config.py` file to enable the plugins locally:
 
-```python
+````python
 ...
 
-hello_plugin = Plug(
-    name="camera_device", # name of the django app in the plugin
-    package_name="/app/care_camera_device", # this has to be /app/ + plugin folder name
-    version="", # keep it empty for local development
-    configs={}, # plugin configurations if any
-)
-plugs = [hello_plug]
+from plugs.manager import PlugManager
+from plugs.plug import Plug
+
+plugs = [
+    Plug(
+        name="gateway_device",
+        package_name="/app/plug", # this should be relative path of the plug
+        version="",
+        configs={},
+    ),
+    Plug(
+        name="camera_device",
+        package_name="/app/plug", # this should be relative path of the plug
+        version="",
+        configs={},
+    ),
+    Plug(
+        name="vitals_observation_device",
+        package_name="/app/plug", # this should be relative path of the plug
+        version="",
+        configs={},
+    ),
+]
+
+manager = PlugManager(plugs)
 
 ...
 ```
 
-3. Tweak the code in plugs/manager.py, install the plugin in editable mode
+3. Install the plugins
+
+```bash
+python install_plugins.py
+```
+
+4. Tweak the code in plugs/manager.py to update the pip install command with the -e flag for editable installation
 
 ```python
 ...
@@ -43,7 +66,7 @@ subprocess.check_call(
 ...
 ```
 
-4. Rebuild the docker image and run the server
+5. Rebuild the docker image and run the server
 
 ```bash
 make re-build
@@ -79,3 +102,4 @@ This project is licensed under the terms of the [MIT license](LICENSE).
 ---
 
 This plugin was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) using the [ohcnetwork/care-plugin-cookiecutter](https://github.com/ohcnetwork/care-plugin-cookiecutter).
+````

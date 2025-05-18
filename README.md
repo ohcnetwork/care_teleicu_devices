@@ -17,7 +17,6 @@ git clone git@github.com:ohcnetwork/care_teleicu_devices.git
 2. Add the following plug configuration to your `plug_config.py` file to enable the plugins locally:
 
 ```python
-...
 
 from plugs.manager import PlugManager
 from plugs.plug import Plug
@@ -25,19 +24,19 @@ from plugs.plug import Plug
 plugs = [
     Plug(
         name="gateway_device",
-        package_name="/app/care_teleicu_devices", # this has to be /app/ + plugin folder name
+        package_name="", # path to the care_teleicu_devices project folder
         version="",
         configs={},
     ),
     Plug(
         name="camera_device",
-        package_name="/app/care_teleicu_devices",# this has to be /app/ + plugin folder name
+        package_name="",
         version="",
         configs={},
     ),
     Plug(
         name="vitals_observation_device",
-        package_name="/app/care_teleicu_devices", # this has to be /app/ + plugin folder name
+        package_name="",
         version="",
         configs={},
     ),
@@ -45,19 +44,16 @@ plugs = [
 
 manager = PlugManager(plugs)
 
-...
 ```
 
 3. Tweak the code in plugs/manager.py to update the pip install command with the -e flag for editable installation
 
 ```python
-...
 
 subprocess.check_call(
     [sys.executable, "-m", "pip", "install", "-e", *packages] # add -e flag to install in editable mode
 )
 
-...
 ```
 
 4. Install the plugins
@@ -81,7 +77,6 @@ make up
 To install care camera device, you can add the plugin config in [care/plug_config.py](https://github.com/ohcnetwork/care/blob/develop/plug_config.py) as follows:
 
 ```python
-...
 
 hello_plug = [
          Plug(
@@ -104,7 +99,7 @@ hello_plug = [
         ),
          ]
 plugs = [hello_plug]
-...
+
 ```
 
 [Extended Docs on Plug Installation](https://care-be-docs.ohc.network/pluggable-apps/configuration.html)

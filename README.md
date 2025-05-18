@@ -11,12 +11,12 @@ To develop the plug in local environment along with care, follow the steps below
 
 ```bash
 cd care
-git clone git@github.com:ohcnetwork/care_camera_device.git
+git clone git@github.com:ohcnetwork/care_teleicu_devices.git
 ```
 
 2. Add the following plug configuration to your `plug_config.py` file to enable the plugins locally:
 
-````python
+```python
 ...
 
 from plugs.manager import PlugManager
@@ -25,19 +25,19 @@ from plugs.plug import Plug
 plugs = [
     Plug(
         name="gateway_device",
-        package_name="/app/plug", # this should be relative path of the plug
+        package_name="/app/care_teleicu_devices", # this has to be /app/ + plugin folder name
         version="",
         configs={},
     ),
     Plug(
         name="camera_device",
-        package_name="/app/plug", # this should be relative path of the plug
+        package_name="/app/care_teleicu_devices",# this has to be /app/ + plugin folder name
         version="",
         configs={},
     ),
     Plug(
         name="vitals_observation_device",
-        package_name="/app/plug", # this should be relative path of the plug
+        package_name="/app/care_teleicu_devices", # this has to be /app/ + plugin folder name
         version="",
         configs={},
     ),
@@ -48,13 +48,7 @@ manager = PlugManager(plugs)
 ...
 ```
 
-3. Install the plugins
-
-```bash
-python install_plugins.py
-```
-
-4. Tweak the code in plugs/manager.py to update the pip install command with the -e flag for editable installation
+3. Tweak the code in plugs/manager.py to update the pip install command with the -e flag for editable installation
 
 ```python
 ...
@@ -64,6 +58,12 @@ subprocess.check_call(
 )
 
 ...
+```
+
+4. Install the plugins
+
+```bash
+python install_plugins.py
 ```
 
 5. Rebuild the docker image and run the server
@@ -83,12 +83,26 @@ To install care camera device, you can add the plugin config in [care/plug_confi
 ```python
 ...
 
-hello_plug = Plug(
-    name="camera_device",
-    package_name="git+https://github.com/ohcnetwork/care_camera_device.git",
-    version="@main",
-    configs={},
-)
+hello_plug = [
+         Plug(
+             name="gateway_device",
+             package_name="git+https://github.com/ohcnetwork/care_teleicu_devices",
+             version="@main",
+             configs={},
+         ),
+         Plug(
+             name="camera_device",
+             package_name="git+https://github.com/ohcnetwork/care_teleicu_devices",
+             version="@main",
+             configs={},
+        ),
+        Plug(
+             name="vitals_observation_device",
+             package_name="git+https://github.com/ohcnetwork/care_teleicu_devices",
+             version="@main",
+             configs={},
+        ),
+         ]
 plugs = [hello_plug]
 ...
 ```
@@ -102,4 +116,7 @@ This project is licensed under the terms of the [MIT license](LICENSE).
 ---
 
 This plugin was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) using the [ohcnetwork/care-plugin-cookiecutter](https://github.com/ohcnetwork/care-plugin-cookiecutter).
-````
+
+```
+
+```

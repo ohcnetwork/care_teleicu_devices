@@ -2,11 +2,11 @@
 
 Care plugin for TeleICU Gateway, ONVIF Camera, HL7 Vitals Observation Device device integration.
 
-> [!INFO] 
+> [!NOTE] 
 > This plugin package consists of three plugs:
-> `gateway_device` - This plug is responsible for gateway device integration such as TeleICU Gateway. This is required for camera and vitals observation device plugs to work.
-> `camera_device` - This plug is responsible for camera device integration such as ONVIF cameras.
-> `vitals_observation_device` - This plug is responsible for vitals observation device such as HL7 Monitor / Ventilator.
+> 1. `gateway_device` - This plug is responsible for gateway device integration such as TeleICU Gateway. This is required for camera and vitals observation device plugs to work.
+> 2. `camera_device` - This plug is responsible for camera device integration such as ONVIF cameras.
+> 3. `vitals_observation_device` - This plug is responsible for vitals observation device such as HL7 Monitor / Ventilator.
 
 ## Local Development
 

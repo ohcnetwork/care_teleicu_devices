@@ -12,7 +12,7 @@ logger: Logger = get_task_logger(__name__)
 @shared_task
 def cleanup_possition_presets():
     """
-    Deletes PositionPreset objects whose associated FacilityLocation has been deleted.
+    Deletes PositionPreset objects whose associated FacilityLocation or Camera device have been deleted.
     """
     logger.info("Cleaning up PositionPreset objects with deleted FacilityLocation")
     queryset = PositionPreset.objects.filter(

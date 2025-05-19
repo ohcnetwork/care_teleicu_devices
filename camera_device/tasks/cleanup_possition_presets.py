@@ -14,7 +14,7 @@ def cleanup_possition_presets():
     """
     Deletes PositionPreset objects whose associated FacilityLocation or Camera device have been deleted.
     """
-    logger.info("Cleaning up PositionPreset objects with deleted FacilityLocation")
+    logger.info("Cleaning up orphaned PositionPreset objects")
     queryset = PositionPreset.objects.filter(
         Q(location__deleted=True) | Q(camera__deleted=True)
     )

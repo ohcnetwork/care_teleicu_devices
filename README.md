@@ -81,13 +81,6 @@ To install care teleicu devices plugs, you can add the plugin config in [care/pl
 from plugs.manager import PlugManager
 from plugs.plug import Plug
 
-hello_plug = Plug(
-    name="camera_device",
-    package_name="git+https://github.com/ohcnetwork/care_camera_device.git",
-    version="@main",
-    configs={},
-)
-
 plugs = [
     Plug(
         name="gateway_device",

@@ -114,5 +114,5 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
             model_instance.save()
             return Response({"detail": "Observation created successfully"})
         except Exception as e:
-            logger.error(f"Error creating Diagnostic Report: {e}")
+            logger.error(f"Error creating Diagnostic Report: {e}", exc_info=True)
             raise ValidationError("Error creating Diagnostic Report") from e

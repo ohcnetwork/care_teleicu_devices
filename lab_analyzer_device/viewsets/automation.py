@@ -27,6 +27,7 @@ from lab_analyzer_device.authentication import MiddlewareAuthentication
 
 logger = logging.getLogger(__name__)
 
+
 class UploadObservationRequestSpec(BaseModel):
     service_request: UUID4
     result: ObservationUpdateSpec
@@ -57,14 +58,19 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
     def create_observation(self, request, *args, **kwargs):
         request_data = UploadObservationRequestSpec(**request.data)
         service_request = get_object_or_404(
-            ServiceRequest.objects.select_related("activity_definition"), external_id=request_data.service_request
+            ServiceRequest.objects.select_related("activity_definition", "encounter"),
+            external_id=request_data.service_request,
         )
 
         try:
-            diagnostic_report_code = service_request.activity_definition.diagnostic_report_codes[0]
+            diagnostic_report_code = (
+                service_request.activity_definition.diagnostic_report_codes[0]
+            )
             observation_definition = get_object_or_404(
                 ObservationDefinition,
-                id=service_request.activity_definition.observation_result_requirements[0],
+                id=service_request.activity_definition.observation_result_requirements[
+                    0
+                ],
             )
 
             diagnostic_report, _ = DiagnosticReport.objects.get_or_create(
@@ -72,11 +78,15 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
                 defaults={
                     "status": DiagnosticReportStatusChoices.final.value,
                     "encounter_id": service_request.encounter_id,
-                    "patient_id": service_request.patient_id,
+                    "patient_id": service_request.encounter.patient_id,
                     "created_by": request.user,
                     "updated_by": request.user,
-                    "category":{"code":"LAB","display":"Laboratory","system":"http://terminology.hl7.org/CodeSystem/v2-0074"},
-                    "code":diagnostic_report_code
+                    "category": {
+                        "code": "LAB",
+                        "display": "Laboratory",
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                    },
+                    "code": diagnostic_report_code,
                 },
             )
 
@@ -84,7 +94,7 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
                 observation_definition, diagnostic_report.encounter
             )
             serializer_obj = ObservationUpdateSpec.model_validate(
-               request_data.result.model_dump(mode="json")
+                request_data.result.model_dump(mode="json")
             )
             model_instance = serializer_obj.de_serialize(obj=observation_obj)
             model_instance.observation_definition = observation_definition

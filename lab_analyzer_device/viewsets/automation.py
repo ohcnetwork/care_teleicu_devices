@@ -1,4 +1,4 @@
-import re
+import logging
 from rest_framework.response import Response
 from pydantic import UUID4, BaseModel
 from rest_framework.decorators import action
@@ -24,6 +24,8 @@ from care.utils.shortcuts import get_object_or_404
 from gateway_device.client import GatewayClient
 from lab_analyzer_device.authentication import MiddlewareAuthentication
 
+
+logger = logging.getLogger(__name__)
 
 class UploadObservationRequestSpec(BaseModel):
     service_request: UUID4
@@ -53,82 +55,6 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
 
     @action(detail=False, methods=["POST"])
     def create_observation(self, request, *args, **kwargs):
-
-        """ 
-        {
-            "service_request": "bc7f6758-ee9f-4b91-a1df-f28b578a4572",
-            "result": {
-                "interpretation": "normal",
-                "component": [
-                    {
-                        "code": {
-                            "code": "LP32067-8",
-                            "system": "http://loinc.org",
-                            "display": "Hemoglobin",
-                        },
-                        "value": {
-                            "value": "11.83",
-                            "unit": {
-                                "code": "g/dL",
-                                "system": "http://unitsofmeasure.org",
-                                "display": "g/dL",
-                            },
-                        },
-                        "interpretation": "normal",
-                    },
-                    {
-                        "code": {
-                            "code": "LP15101-6",
-                            "system": "http://loinc.org",
-                            "display": "Hematocrit",
-                        },
-                        "value": {
-                            "value": "45.24",
-                            "unit": {
-                                "code": "%",
-                                "system": "http://unitsofmeasure.org",
-                                "display": "%",
-                            },
-                        },
-                        "interpretation": "normal",
-                    },
-                    {
-                        "code": {
-                            "code": "LA12896-9",
-                            "system": "http://loinc.org",
-                            "display": "Erythrocytes",
-                        },
-                        "value": {
-                            "value": "5.58",
-                            "unit": {
-                                "code": "10*6/uL",
-                                "system": "http://unitsofmeasure.org",
-                                "display": "10*6/uL",
-                            },
-                        },
-                        "interpretation": "normal",
-                    },
-                    {
-                        "code": {
-                            "code": "LP7631-7",
-                            "system": "http://loinc.org",
-                            "display": "Platelets",
-                        },
-                        "value": {
-                            "value": "367.08",
-                            "unit": {
-                                "code": "10*3/uL",
-                                "system": "http://unitsofmeasure.org",
-                                "display": "10*3/uL",
-                            },
-                        },
-                        "interpretation": "normal",
-                    },
-                ],
-            },
-        }
-        """
-
         request_data = UploadObservationRequestSpec(**request.data)
         service_request = get_object_or_404(
             ServiceRequest.objects.select_related("activity_definition"), external_id=request_data.service_request
@@ -155,7 +81,7 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
             )
 
             observation_obj = convert_od_to_observation(
-                    observation_definition, diagnostic_report.encounter
+                observation_definition, diagnostic_report.encounter
             )
             serializer_obj = ObservationUpdateSpec.model_validate(
                request_data.result.model_dump(mode="json")
@@ -178,4 +104,5 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
             model_instance.save()
             return Response({"detail": "Observation created successfully"})
         except Exception as e:
+            logger.error(f"Error creating Diagnostic Report: {e}")
             raise ValidationError("Error creating Diagnostic Report") from e

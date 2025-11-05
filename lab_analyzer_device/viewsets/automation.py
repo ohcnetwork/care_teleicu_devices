@@ -105,12 +105,12 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
             model_instance.subject_id = diagnostic_report.encounter.external_id
             model_instance.diagnostic_report = diagnostic_report
             model_instance.subject_type = SubjectType.encounter.value
-            metrics_cache = {}
-            if model_instance.observation_definition:
-                returned_cache = compute_observation_interpretation(
-                    model_instance, metrics_cache
-                )
-                metrics_cache = returned_cache
+            # metrics_cache = {}
+            # if model_instance.observation_definition:
+            #     returned_cache = compute_observation_interpretation(
+            #         model_instance, metrics_cache
+            #     )
+            #     metrics_cache = returned_cache
             model_instance.save()
             return Response({"detail": "Observation created successfully"})
         except Exception as e:

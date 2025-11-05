@@ -101,7 +101,7 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
             model_instance.created_by = self.request.user
             model_instance.updated_by = self.request.user
             model_instance.encounter = diagnostic_report.encounter
-            model_instance.patient = diagnostic_report.patient
+            model_instance.patient = diagnostic_report.encounter.patient
             model_instance.subject_id = diagnostic_report.encounter.external_id
             model_instance.diagnostic_report = diagnostic_report
             model_instance.subject_type = SubjectType.encounter.value

@@ -76,7 +76,7 @@ class LabAnalyzerAutomationViewSet(GenericViewSet):
             diagnostic_report, _ = DiagnosticReport.objects.get_or_create(
                 service_request=service_request,
                 defaults={
-                    "status": DiagnosticReportStatusChoices.final.value,
+                    "status": DiagnosticReportStatusChoices.preliminary.value,
                     "encounter_id": service_request.encounter_id,
                     "patient_id": service_request.encounter.patient_id,
                     "created_by": request.user,

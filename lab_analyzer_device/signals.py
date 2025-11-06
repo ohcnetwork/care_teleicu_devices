@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 from care.emr.models.device import Device
 from care.emr.models.service_request import ServiceRequest
 from care.emr.models.specimen import Specimen
+from care.emr.models.observation_definition import ObservationDefinition
 
 logger = logging.getLogger(__name__)
 
@@ -57,59 +58,63 @@ def enqueue_diagnostic_report_processing(sender, instance, created, **kwargs):
         return
 
     if instance.collection and instance.collection.get("collected_date_time"):
-        service_request: ServiceRequest = instance.service_request
-        locations = service_request.locations
-        if (
-            service_request.healthcare_service
-            and service_request.healthcare_service.locations
-        ):
-            locations.append(service_request.healthcare_service.locations)
-        if locations:
-            device = Device.objects.filter(
-                current_location__in=locations,
-                care_type="lab-analyzer",
-            ).first()
-            if not device:
-                logger.warning("No lab analyzer device found for location")
-                return
-        else:
-            logger.warning(
-                f"Service request {service_request.id} has no healthcare service or locations"
-            )
-            return
-
-        encounter = service_request.encounter
-        patient = encounter.patient
-        facility = service_request.facility
-        activity_definition = service_request.activity_definition
-
-        payload = {
-            "patient": {
-                "external_id": str(patient.external_id),
-                "name": patient.name,
-                "date_of_birth": patient.date_of_birth.isoformat()
-                if patient.date_of_birth
-                else None,
-                "gender": patient.gender,
-            },
-            "facility": {
-                "external_id": str(facility.external_id),
-                "name": facility.name,
-            },
-            "service_request": {
-                "external_id": str(service_request.external_id),
-                "test_code": activity_definition.code,
-                "date_time": service_request.created_date.isoformat(),
-            },
-        }
         try:
+            service_request: ServiceRequest = instance.service_request
+            locations = service_request.locations
+            if (
+                service_request.healthcare_service
+                and service_request.healthcare_service.locations
+            ):
+                locations.append(service_request.healthcare_service.locations)
+            if locations:
+                device = Device.objects.filter(
+                    current_location__in=locations,
+                    care_type="lab-analyzer",
+                ).first()
+                if not device:
+                    logger.warning("No lab analyzer device found for location")
+                    return
+            else:
+                logger.warning(
+                    f"Service request {service_request.id} has no healthcare service or locations"
+                )
+                return
+
+            encounter = service_request.encounter
+            patient = encounter.patient
+            facility = service_request.facility
+            activity_definition = service_request.activity_definition
+            observation_definition = ObservationDefinition.objects.filter(
+                id__in=activity_definition.observation_result_requirements
+            ).first()
+
+            payload = {
+                "patient": {
+                    "external_id": str(patient.external_id),
+                    "name": patient.name,
+                    "date_of_birth": patient.date_of_birth.isoformat()
+                    if patient.date_of_birth
+                    else None,
+                    "gender": patient.gender,
+                },
+                "facility": {
+                    "external_id": str(facility.external_id),
+                    "name": facility.name,
+                },
+                "service_request": {
+                    "external_id": str(service_request.external_id),
+                    "test_code": observation_definition.code,
+                    "date_time": service_request.created_date.isoformat(),
+                },
+            }
             response = make_device_request(device, payload)
             logger.info(
                 f"Lab analyzer request sent for Specimen {instance.id}, response status: {response.status_code}"
             )
+
         except Exception as e:
             logger.error(
-                f"Error occurred while sending lab analyzer request for Specimen {instance.id}: {str(e)}"
+                f"Error processing Specimen {instance.id} for lab analyzer: {str(e)}", exc_info=True
             )
 
 

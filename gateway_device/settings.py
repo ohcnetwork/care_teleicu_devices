@@ -101,6 +101,7 @@ REQUIRED_SETTINGS = {
 }
 
 DEFAULTS = {
+    "timeout": 20,
 }
 
 plugin_settings = PluginSettings(

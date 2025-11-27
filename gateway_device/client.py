@@ -3,11 +3,11 @@ import logging
 
 import requests
 from care.emr.models.device import Device
-from django.conf import settings
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.exceptions import APIException, ValidationError
 
+from gateway_device.settings import plugin_settings as settings
 from gateway_device.token_generator import generate_jwt
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class GatewayClient:
     auth_header_type = "Care_Bearer"
 
     def __init__(self, gateway: Device):
-        self.timeout = settings.PLUGIN_CONFIGS["gateway_device"].get("timeout", 20)
+        self.timeout = settings.CARE_TELEICU_GATEWAY_API_TIMEOUT
         try:
             self.gateway_host = gateway.metadata["endpoint_address"]
         except KeyError:

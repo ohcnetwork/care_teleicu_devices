@@ -6,6 +6,7 @@ from care.emr.models.device import Device
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.exceptions import APIException, ValidationError
+from django.conf import settings as django_settings
 
 from gateway_device.settings import plugin_settings as settings
 from gateway_device.token_generator import generate_jwt
@@ -23,7 +24,7 @@ class GatewayClient:
         except KeyError:
             raise ValidationError("Gateway endpoint address not set")
         self.insecure_connection = gateway.metadata.get("insecure_connection", False)
-        if settings.IS_PRODUCTION:
+        if django_settings.IS_PRODUCTION:
             self.insecure_connection = False
 
     def _get_url(self, endpoint):

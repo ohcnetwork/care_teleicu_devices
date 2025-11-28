@@ -43,6 +43,8 @@ setup(
             "gateway_device.*",
             "vitals_observation_device",
             "vitals_observation_device.*",
+            "lab_analyzer_device",
+            "lab_analyzer_device.*",
         ]
     ),
     test_suite="tests",

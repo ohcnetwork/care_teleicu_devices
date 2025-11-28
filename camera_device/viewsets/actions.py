@@ -64,6 +64,7 @@ class CameraActionsViewSet(GenericViewSet):
     @action(detail=True, methods=["GET"])
     def get_status(self, request, *args, **kwargs):
         instance = self.get_object()
+        self.authorize_video_stream(instance)
         gateway_client = self.get_gateway_client(instance)
         request_data = self.get_gateway_request_data(instance)
         return gateway_client.get("/status", request_data, as_http_response=True)
@@ -71,6 +72,7 @@ class CameraActionsViewSet(GenericViewSet):
     @action(detail=True, methods=["GET"])
     def get_presets(self, request, *args, **kwargs):
         instance = self.get_object()
+        self.authorize_video_stream(instance)
         gateway_client = self.get_gateway_client(instance)
         request_data = self.get_gateway_request_data(instance)
         return gateway_client.get("/presets", request_data, as_http_response=True)

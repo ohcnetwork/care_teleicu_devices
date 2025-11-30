@@ -1,6 +1,7 @@
 import uuid
 
 from drf_spectacular.utils import extend_schema
+from gateway_device.authentication import GatewayAuthentication
 from pydantic import BaseModel, RootModel
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -9,9 +10,6 @@ from rest_framework.viewsets import GenericViewSet
 from care.emr.models import Device, Observation
 from care.emr.resources.observation.spec import ObservationSpec
 from care.emr.resources.questionnaire.spec import SubjectType
-from plugins.care_teleicu_devices.gateway_device.authentication import (
-    GatewayAuthentication,
-)
 
 
 class DeviceListSpec(BaseModel):

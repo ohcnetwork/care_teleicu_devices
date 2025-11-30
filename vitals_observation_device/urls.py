@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
-from plugins.care_teleicu_devices.vitals_observation_device.viewsets.automated_observations import (
+from vitals_observation_device.viewsets.automated_observations import (
     AutomatedObservationsViewSet,
 )
 

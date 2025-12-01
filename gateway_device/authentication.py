@@ -90,7 +90,9 @@ class GatewayAuthentication(JWTAuthentication):
 
         protocol = "http" if gateway.metadata.get("insecure", False) else "https"
 
-        open_id_url = f"{protocol}://{gateway.metadata['endpoint_address']}/.well-known/openid-configuration/"
+        open_id_url = (
+            f"{protocol}://{gateway.metadata['endpoint_address']}/openid-configuration/"
+        )
 
         validated_token = self.get_validated_token(open_id_url, raw_token)
 

@@ -15,6 +15,6 @@ class PublicJWKsView(GenericViewSet):
     permission_classes = ()
 
     @method_decorator(cache_page(60 * 60 * 24))
-    @action(detail=False, methods=["GET"], url_path=".well-known/jwks.json")
+    @action(detail=False, methods=["GET"], url_path="jwks.json")
     def jwks(self, *args, **kwargs):
         return Response(settings.JWKS.as_dict())

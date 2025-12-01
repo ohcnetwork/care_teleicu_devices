@@ -1,7 +1,6 @@
 import uuid
 
 from drf_spectacular.utils import extend_schema
-from gateway_device.authentication import GatewayAuthentication
 from pydantic import BaseModel, RootModel
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -10,6 +9,7 @@ from rest_framework.viewsets import GenericViewSet
 from care.emr.models import Device, Observation
 from care.emr.resources.observation.spec import ObservationSpec
 from care.emr.resources.questionnaire.spec import SubjectType
+from vitals_observation_device.authentication import AutomatedObservationsAuthentication
 
 
 class DeviceListSpec(BaseModel):
@@ -30,7 +30,7 @@ class AutomatedObservationsViewSet(GenericViewSet):
         care_type="vitals-observation", current_encounter__isnull=False
     )
     lookup_field = "external_id"
-    authentication_classes = (GatewayAuthentication,)
+    authentication_classes = (AutomatedObservationsAuthentication,)
 
     def get_queryset(self):
         return (

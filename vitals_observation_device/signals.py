@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save
 from django.db import transaction
 from django.dispatch import receiver
+from django.utils import timezone
 
 from care.emr.models import FacilityLocation, Device, DeviceEncounterHistory
 
@@ -23,6 +24,6 @@ def unlink_on_encounter_location_changed(sender, instance, created, **kwargs):
                     device=device, encounter=device.current_encounter, end__isnull=True
                 ).first()
                 if old_obj:
-                    old_obj.end = device.current_encounter.date_of_admission
+                    old_obj.end = timezone.now()
                     old_obj.save()
         devices_to_unlink.update(current_encounter=None)

@@ -2,14 +2,14 @@ import json
 import logging
 
 import requests
-from care.emr.models.device import Device
-from django.http import HttpResponse
-from rest_framework import status
-from rest_framework.exceptions import APIException, ValidationError
 from django.conf import settings as django_settings
-
+from django.http import HttpResponse
 from gateway_device.settings import plugin_settings as settings
 from gateway_device.token_generator import generate_jwt
+from rest_framework import status
+from rest_framework.exceptions import APIException, ValidationError
+
+from care.emr.models.device import Device
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +23,12 @@ class GatewayClient:
             self.gateway_host = gateway.metadata["endpoint_address"]
         except KeyError:
             raise ValidationError("Gateway endpoint address not set")
-        self.insecure_connection = gateway.metadata.get("insecure_connection", False)
+        self.insecure = gateway.metadata.get("insecure", False)
         if django_settings.IS_PRODUCTION:
-            self.insecure_connection = False
+            self.insecure = False
 
     def _get_url(self, endpoint):
-        protocol = "http" if self.insecure_connection else "https"
+        protocol = "http" if self.insecure else "https"
         return f"{protocol}://{self.gateway_host}{endpoint}"
 
     def _get_headers(self):
